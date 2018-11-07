@@ -15,7 +15,7 @@ app.get('/auth',(req,res)=>{
     MongoClient.connect(url, function(err, db) {
     if (err) console.log(err);
     var dbo = db.db("leaveautomation");
-    dbo.collection("letters").find({email:req.query.email, password:req.query.password},{ projection: { _id: 0, email: 1,} }).toArray(function(err, result) {
+    dbo.collection("studentLogin").find({"email":req.query.email, "password":req.query.password},{ projection: { _id: 0, email: 1, name:1} }).toArray(function(err, result) {
       if (err) console.log(err);
       res.send({
         email: result,
@@ -24,13 +24,13 @@ app.get('/auth',(req,res)=>{
       db.close();
     });
   });
-})
+});
 
-app.get('/pending/',(req,res)=>{
+app.get('/pending',(req,res)=>{
   MongoClient.connect(url, function(err, db) {
   if (err) throw err;
   var dbo = db.db("leaveautomation");
-  dbo.collection("letters").find({email:req.query.email },{ projection: { _id: 0, to:1, reference:1, body:1} }).toArray(function(err, result) {
+  dbo.collection("letters").find({email:req.query.email, toApproved:false},{ projection: { _id: 0, to:1, through:1,sub:1, body:1} }).toArray(function(err, result) {
     if (err) throw err;
     res.send(result);
     db.close();
@@ -38,7 +38,7 @@ app.get('/pending/',(req,res)=>{
 });
 })
 
-app.get('/approved/',(req,res)=>{
+app.get('/approved',(req,res)=>{
   MongoClient.connect(url, function(err, db) {
   if (err) throw err;
   var dbo = db.db("leaveautomation");
@@ -60,6 +60,24 @@ app.get('/status/:id',(req,res)=>{
     db.close();
   });
 });
+});
+
+app.get('/admins',(req,res)=>{
+    MongoClient.connect(url, function(err, db) {
+    if (err) console.log(err);
+    var dbo = db.db("leaveautomation");
+    dbo.collection("adminLogin").find({},{ projection: { _id: 0, name: 1,} }).toArray(function(err, result) {
+      if (err) console.log(err);
+      res.send(result);
+      db.close();
+    });
+  });
+});
+
+app.post('/submit',(req,res)=>{
+    var email = req.body.to;
+
+    res.send({status:email});
 });
 
 
