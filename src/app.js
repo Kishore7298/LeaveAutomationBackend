@@ -98,6 +98,36 @@ app.get('/adminApproved',(req,res)=>{
 });
 });
 
+//admin route to update through Approved to true
+ app.get('/throughAdminApprove',(req,res)=>{
+   id = req.query.id
+   MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("leaveautomation");
+    var myquery = { _id: new ObjectID(id) };
+    var newvalues = { $set: {throughApproved: true } };
+    dbo.collection("letters").updateOne(myquery, newvalues, function(err, res) {
+      if (err) throw err;
+      db.close();
+    });
+  }); 
+ }); 
+ 
+//admin route to update toApproved to true
+ app.get('/toAdminApprove',(req,res)=>{
+  id = req.query.id
+  MongoClient.connect(url, function(err, db) {
+   if (err) throw err;
+   var dbo = db.db("leaveautomation");
+   var myquery = { _id: new ObjectID(id) };
+   var newvalues = { $set: {toApproved: true } };
+   dbo.collection("letters").updateOne(myquery, newvalues, function(err, res) {
+     if (err) throw err;
+     db.close();
+   });
+ }); 
+}); 
+
 app.get('/approved',(req,res)=>{
   MongoClient.connect(url, function(err, db) {
   if (err) throw err;
